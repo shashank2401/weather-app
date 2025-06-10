@@ -1,4 +1,4 @@
-import { apiKey } from './config.js';
+// import { apiKey } from './config.js';
 
 let isCelsius = true;
 
@@ -36,7 +36,7 @@ async function fetchWeatherByCoords(lat, lon, cityDisplayName, showNotice = fals
     try {
         const units = isCelsius ? 'metric' : 'imperial';
         const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${units}`
+            `/api/weather?type=weather&lat=${lat}&lon=${lon}&units=${units}`
         );
         if (!response.ok) throw new Error('City not found');
         const data = await response.json();
@@ -58,7 +58,7 @@ async function fetchWeatherByCoords(lat, lon, cityDisplayName, showNotice = fals
 // For manual typing/search, fallback to first suggestion if available
 async function fetchWeatherByCityName(city) {
     elements.locationNotice.style.display = 'none';
-    const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(city)}&limit=5&appid=${apiKey}`;
+    const url = `/api/weather?type=geo&q=${encodeURIComponent(city)}`;
     const res = await fetch(url);
     const cities = await res.json();
     // Filter to only those whose name starts with the input
@@ -124,7 +124,7 @@ elements.cityInput.addEventListener('input', function() {
 });
 
 async function fetchSuggestions(query) {
-    const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=5&appid=${apiKey}`;
+    const url = `/api/weather?type=geo&q=${encodeURIComponent(query)}`;
     const res = await fetch(url);
     const cities = await res.json();
     // Filter to only those whose name starts with the input
@@ -193,7 +193,7 @@ elements.locationBtn.addEventListener('click', () => {
 
                 // Reverse geocode to get city/state/country
                 try {
-                    const geoUrl = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`;
+                    const geoUrl = `/api/weather?type=reverse&lat=${lat}&lon=${lon}`;
                     const geoRes = await fetch(geoUrl);
                     const geoData = await geoRes.json();
                     let displayName = 'Your Location';
