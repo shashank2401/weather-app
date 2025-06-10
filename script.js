@@ -2,6 +2,11 @@
 
 let isCelsius = true;
 
+let lastUsedLat = null;
+let lastUsedLon = null;
+let lastUsedViaGeolocation = false;
+let lastUsedDisplayName = '';
+
 const elements = {
     cityInput: document.getElementById('cityInput'),
     searchBtn: document.getElementById('searchBtn'),
@@ -43,6 +48,13 @@ async function fetchWeatherByCoords(lat, lon, cityDisplayName, showNotice = fals
         data.name = cityDisplayName;
         updateUI(data);
 
+        // Cache for toggling
+        lastUsedLat = lat;
+        lastUsedLon = lon;
+        lastUsedViaGeolocation = true;
+        lastUsedDisplayName = cityDisplayName || '';
+
+
         // Show location notice if geolocation was used
         if (showNotice && cityDisplayName && cityDisplayName.trim() !== '') {
             elements.locationNotice.textContent = `Showing weather for the nearest known location: ${cityDisplayName}`;
@@ -68,6 +80,12 @@ async function fetchWeatherByCityName(city) {
     const cityObj = filtered.length ? filtered[0] : cities[0];
     if (cityObj) {
         const displayName = `${cityObj.name}${cityObj.state ? ', ' + cityObj.state : ''}, ${cityObj.country}`;
+
+        lastUsedLat = cityObj.lat;
+        lastUsedLon = cityObj.lon;
+        lastUsedViaGeolocation = false;
+        lastUsedDisplayName = displayName;
+
         fetchWeatherByCoords(cityObj.lat, cityObj.lon, displayName, false);
     } else {
         showError("City not found");
@@ -157,7 +175,15 @@ document.addEventListener('click', (e) => {
 function toggleUnits() {
     isCelsius = !isCelsius;
     elements.unitToggle.textContent = `°${isCelsius ? 'C' : 'F'}`;
-    if (elements.cityName.textContent && elements.cityName.textContent !== '') {
+
+    if (lastUsedLat !== null && lastUsedLon !== null) {
+        fetchWeatherByCoords(
+            lastUsedLat,
+            lastUsedLon,
+            lastUsedDisplayName,
+            lastUsedViaGeolocation
+        );
+    } else if (elements.cityName.textContent && elements.cityName.textContent !== '') {
         fetchWeatherByCityName(elements.cityName.textContent);
     }
 }
