@@ -13,9 +13,9 @@ A modern, responsive weather application that provides real-time weather informa
 
 ## Demo
 
-[Live Demo]
+[Live Demo](https://weather-app-zeta-three-62.vercel.app/)
 
-## Installation
+## Installation (Local Setup)
 
 1. **Clone the repository:**
    ```bash
@@ -25,38 +25,49 @@ A modern, responsive weather application that provides real-time weather informa
 
 2. **Obtain an API key from [OpenWeatherMap](https://openweathermap.org/api).**
 
-3. **Create a `config.js` file in the root directory:**
-   ```js
-   // config.js
-   export const apiKey = 'YOUR_API_KEY_HERE';
+3. **Create a `.env.local` file in the root directory:**
    ```
-   *This file is ignored by `.gitignore` to keep your API key safe.*
+   OPENWEATHER_API_KEY=your_actual_api_key_here
+   ```
 
-4. **Run a local development server (required for ES modules):**
+4. **Serve the project locally (use any local static server):**
    ```bash
    python -m http.server 8000
    ```
-   Or use any local server (like the VS Code Live Server extension).
 
-5. **Open the app in your browser:**
+   Or use the Live Server extension in VS Code.
+
+5. **Visit the app in your browser:**
    ```
    http://localhost:8000
    ```
-   Or use your local IP address to view it on mobile.
+
+## Deployment (Vercel)
+
+1. Push your code to a GitHub repository.
+
+2. Go to [vercel.com](https://vercel.com), import the repo.
+
+3. In **Vercel Dashboard → Project → Settings → Environment Variables**, add:
+   ```
+   OPENWEATHER_API_KEY = your_actual_api_key_here
+   ```
+
+4. Deploy — Vercel will handle hosting and API routing automatically.
 
 ## Usage
 
-- Start typing a city name to see suggestions and select one.
-- Click the location icon to get weather for your current location (browser permission required).
-- Use the °C/°F toggle to switch between temperature units.
+- Type a city name to see autocomplete suggestions and view its weather.
+- Use the location icon to get weather based on your device’s location (with permission).
+- Click °C/°F toggle to switch units.
 
 ## Technologies Used
 
 - HTML5, CSS3, JavaScript (ES6 Modules)
 - [OpenWeatherMap API](https://openweathermap.org/)
-- [Font Awesome](https://fontawesome.com/)
-- [Feather Icons](https://feathericons.com/)
-- Python HTTP server (`python -m http.server`) for local development
+- Feather Icons
+- Local API routing via Vercel
+- `.env.local` for secure key management
 
 ## Author
 
