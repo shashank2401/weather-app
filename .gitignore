@@ -1,0 +1,2 @@
+# Ignore config.js to keep API keys and sensitive info private
+config.js
