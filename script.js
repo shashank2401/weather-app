@@ -37,7 +37,8 @@ function setInitialState() {
     elements.locationNotice.style.display = 'none';
 }
 
-async function fetchWeatherByCoords(lat, lon, cityDisplayName, showNotice = false) {
+// Updated: Accept viaGeolocation parameter and use it for notice logic and caching
+async function fetchWeatherByCoords(lat, lon, cityDisplayName, showNotice = false, viaGeolocation = false) {
     try {
         const units = isCelsius ? 'metric' : 'imperial';
         const response = await fetch(
@@ -51,12 +52,11 @@ async function fetchWeatherByCoords(lat, lon, cityDisplayName, showNotice = fals
         // Cache for toggling
         lastUsedLat = lat;
         lastUsedLon = lon;
-        lastUsedViaGeolocation = true;
+        lastUsedViaGeolocation = viaGeolocation;
         lastUsedDisplayName = cityDisplayName || '';
 
-
-        // Show location notice if geolocation was used
-        if (showNotice && cityDisplayName && cityDisplayName.trim() !== '') {
+        // Show location notice only if geolocation was used
+        if (showNotice && viaGeolocation && cityDisplayName && cityDisplayName.trim() !== '') {
             elements.locationNotice.textContent = `Showing weather for the nearest known location: ${cityDisplayName}`;
             elements.locationNotice.style.display = 'block';
         } else {
@@ -83,10 +83,11 @@ async function fetchWeatherByCityName(city) {
 
         lastUsedLat = cityObj.lat;
         lastUsedLon = cityObj.lon;
-        lastUsedViaGeolocation = false;
+        lastUsedViaGeolocation = false; // Manual search, not geolocation
         lastUsedDisplayName = displayName;
 
-        fetchWeatherByCoords(cityObj.lat, cityObj.lon, displayName, false);
+        // Pass viaGeolocation = false
+        fetchWeatherByCoords(cityObj.lat, cityObj.lon, displayName, false, false);
     } else {
         showError("City not found");
     }
@@ -161,7 +162,8 @@ function renderSuggestions(cities) {
         li.onclick = () => {
             elements.cityInput.value = li.textContent;
             elements.suggestionsList.innerHTML = '';
-            fetchWeatherByCoords(city.lat, city.lon, li.textContent, false);
+            // Pass viaGeolocation = false
+            fetchWeatherByCoords(city.lat, city.lon, li.textContent, false, false);
         };
         elements.suggestionsList.appendChild(li);
     });
@@ -177,11 +179,13 @@ function toggleUnits() {
     elements.unitToggle.textContent = `°${isCelsius ? 'C' : 'F'}`;
 
     if (lastUsedLat !== null && lastUsedLon !== null) {
+        // Show notice only if lastUsedViaGeolocation is true
         fetchWeatherByCoords(
             lastUsedLat,
             lastUsedLon,
             lastUsedDisplayName,
-            lastUsedViaGeolocation
+            lastUsedViaGeolocation, // showNotice
+            lastUsedViaGeolocation  // viaGeolocation
         );
     } else if (elements.cityName.textContent && elements.cityName.textContent !== '') {
         fetchWeatherByCityName(elements.cityName.textContent);
@@ -227,9 +231,10 @@ elements.locationBtn.addEventListener('click', () => {
                         const loc = geoData[0];
                         displayName = `${loc.name || ''}${loc.state ? ', ' + loc.state : ''}${loc.country ? ', ' + loc.country : ''}`;
                     }
-                    fetchWeatherByCoords(lat, lon, displayName, true);
+                    // Pass viaGeolocation = true
+                    fetchWeatherByCoords(lat, lon, displayName, true, true);
                 } catch (err) {
-                    fetchWeatherByCoords(lat, lon, 'Your Location', true);
+                    fetchWeatherByCoords(lat, lon, 'Your Location', true, true);
                 }
             },
             error => {
