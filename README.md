@@ -109,7 +109,6 @@ A modern, responsive weather application that provides real-time weather informa
 - [OpenWeatherMap API](https://openweathermap.org/)
 - Feather Icons
 - Local API routing via Vercel
-- `.env.local` for secure key management
 
 ## Author
 
