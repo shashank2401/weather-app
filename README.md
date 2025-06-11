@@ -25,22 +25,64 @@ A modern, responsive weather application that provides real-time weather informa
 
 2. **Obtain an API key from [OpenWeatherMap](https://openweathermap.org/api).**
 
-3. **Create a `.env.local` file in the root directory:**
-   ```
-   OPENWEATHER_API_KEY=your_actual_api_key_here
+3. **Open `script.js` and add your API key:**
+
+   At the top of the file, replace:
+   ```js
+   // import { apiKey } from './config.js';
    ```
 
-4. **Serve the project locally (use any local static server):**
+   With:
+   ```js
+   const apiKey = 'YOUR_OPENWEATHERMAP_API_KEY';
+   ```
+
+4. **Update API fetch URLs in `script.js`:**
+
+   Replace all occurrences of:
+   ```js
+   /api/weather?type=weather&lat=...&lon=...&units=...
+   ```
+
+   With:
+   ```js
+   https://api.openweathermap.org/data/2.5/weather?lat=...&lon=...&units=...&appid=${apiKey}
+   ```
+
+   Replace:
+   ```js
+   /api/weather?type=geo&q=...
+   ```
+
+   With:
+   ```js
+   https://api.openweathermap.org/geo/1.0/direct?q=...&limit=5&appid=${apiKey}
+   ```
+
+   And:
+   ```js
+   /api/weather?type=reverse&lat=...&lon=...
+   ```
+
+   With:
+   ```js
+   https://api.openweathermap.org/geo/1.0/reverse?lat=...&lon=...&limit=1&appid=${apiKey}
+   ```
+
+5. **Serve the project locally:**
    ```bash
    python -m http.server 8000
    ```
+   Or use any static server like Live Server in VS Code.
 
-   Or use the Live Server extension in VS Code.
-
-5. **Visit the app in your browser:**
+6. **Visit the app in your browser:**
    ```
    http://localhost:8000
    ```
+
+---
+
+🔐 **Note:** This setup directly embeds your API key in the frontend for local testing. For production, it's recommended to use a backend proxy (`/api/weather`) to keep your API key hidden.
 
 ## Deployment (Vercel)
 
